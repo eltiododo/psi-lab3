@@ -25,7 +25,7 @@ def options_prompt(options: list) -> int:
             if 1 <= choice <= len(options):
                 return choice
             else:
-                print(f"Por favor, ingrese un número entre 1 y {len(options)}.")
+                print(f"Por favor, ingrese un número entre 1 y {len(options)}:", end = "")
 
         except ValueError:
             print("Entrada inválida. Por favor, ingrese un número:", end = " ")
@@ -98,15 +98,22 @@ def apply_filter():
     options = [
         "Difusión tipo 1: exp(-|x|^2 / K^2)", 
         "Difusión tipo 2: 1 / (1 + |x|^2 / K^2)", 
-        "Difusión Charbonnier: 1 / sqrt(1 + |x|^2 / K^2)"
+        "Difusión Charbonnier: 1 / sqrt(1 + |x|^2 / K^2)",
+        "Todas las anteriores"
     ]
     choice = options_prompt(options) - 1  # 0 indexed
 
     switcher = {
         0: aniso.diffusion_type_1,
         1: aniso.diffusion_type_2,
-        2: aniso.diffusion_charbonnier
+        2: aniso.diffusion_charbonnier,
+        3: "all"
     }
+
+    if choice == 3:
+        print("Aplicando todos los filtros...")
+        apply_all_filters()
+        return
 
     diffusion_function = switcher.get(choice)
 
@@ -133,6 +140,37 @@ def apply_filter():
         cmap = 'gray'
     )
 
+def apply_all_filters():
+
+    # Aplicar las 3 funciones de difusión
+    results = []
+    for func in [aniso.diffusion_type_1, aniso.diffusion_type_2, aniso.diffusion_charbonnier]:
+        result_image, applied_params = aniso.anisotropic_diffusion(
+            image,
+            func,
+            iters = params['iters'],
+            lambda_ = params['lambda'],
+            kappa = params['kappa'],
+            kappa_percentile = 90.0 if params['kappa'] == 0 else None
+        )
+        results.append((result_image, applied_params))
+    
+    print("Filtros aplicados, mostrando resultados...")
+    print("\tCierra la ventana emergente para continuar.")
+
+    # Mostrar resultados
+    titles = ['Imagen Original'] + [f"{func.__name__}" for func in [aniso.diffusion_type_1, aniso.diffusion_type_2, aniso.diffusion_charbonnier]]
+    xlabs = [""] + [utils.params_to_str(applied_params) for _, applied_params in results]
+    utils.bulk_plot(
+        [image] + [res[0] for res in results],
+        titles = titles,
+        xlabs = xlabs,
+        cols = 2,
+        figsize = (5, 5),
+        cmap = 'gray'
+    )
+
+
 # Menu de opciones
 def menu_loop():
     print("\n============= Filtro de Difusión Anisotrópica =============")
@@ -156,7 +194,7 @@ def menu_loop():
                 print(f"\t{key} estimado con el percentil 90% del gradiente de la imagen.")
             
             else:
-                print(f"\t{key}: {value}")
+                print(f"\t{key} = {value}")
 
         print()
 

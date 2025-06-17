@@ -24,13 +24,15 @@ def anisotropic_diffusion(image: np.ndarray, diffusion_function,
     if image.ndim != 2:
         raise ValueError("La imagen debe ser en escala de grises.")
 
+    # t = 0, imagen inicial
     current_image = image.copy()
 
-    # En caso de que se especifique kappa_percentile, calcular kappa
-    if (kappa_percentile):
-        kappa = estimate_kappa(current_image, kappa_percentile)
-
     for i in range(iters):
+        
+        # Actualizar kappa
+        if (kappa_percentile):
+            kappa = estimate_kappa(current_image, kappa_percentile)
+        
         nabla_n, nabla_s, nabla_e, nabla_w = [np.zeros_like(current_image) for _ in range(4)]
 
         # Calcular gradientes en las cuatro direcciones, en orden (Ec. 8):
@@ -69,6 +71,7 @@ def diffusion_charbonnier(nabla: np.ndarray, kappa: float) -> np.ndarray:
     return 1 / np.sqrt(1 + (nabla / kappa) ** 2)
 
 # Estimación de kappa basada en el percentil del gradiente de la imagen
+
 def estimate_kappa(image: np.ndarray, percentile: float = 90.0) -> float:
     # Calcular gradiente
     grad_x, grad_y = np.gradient(image)
