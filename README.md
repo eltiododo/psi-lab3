@@ -46,3 +46,10 @@ Para esto se debe instalar la librería libxcb-cursor-dev la cual incluye la dep
 ```shell
 $ sudo apt install libxcb-cursor-dev
 ```
+
+### Fuentes de las imágenes de prueba
+
+- `2b2t_rick.png`: [2b2t Atlas](https://2b2tatlas.com/map)
+- `canaletto.jpg`: [Art Institute of Chicago](https://www.artic.edu/artworks/159742/the-equestrian-monument-from-vedute)
+- `Lichtenstein_test.png`: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Lichtenstein_img_processing_test.png)
+- `photographer.jpg`: [ResearchGate](https://www.researchgate.net/figure/The-cameraman-picture-with-256-256-size_fig3_329563816)
